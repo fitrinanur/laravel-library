@@ -16,6 +16,7 @@
             <div class="card-block">
                 <div class="form-group row">
                     <div class="col-md-12">
+                    <p class="readonly">Please make sure your extension file is .csv</p>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-file"></i></span>
                             <input type="file" id="input1-group1" name="import" class="form-control" placeholder="file">

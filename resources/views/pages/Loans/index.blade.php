@@ -11,6 +11,7 @@
         <div class="attribute">
             <button type="button" class="btn btn-primary" 
              data-toggle="modal" data-target="#LoansAdd">New transaction</button>
+             <a href="{{ route('pdf',['download'=>'pdf']) }}">Download PDF</a>
             <form class="form-inline search-form" action="" method="get">
                 <input class="form-control mr-sm-2" name= "keywords" value = "{{ request()->get('keywords') }}"
                   type="search" placeholder="Search" aria-label="Search">

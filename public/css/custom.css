@@ -6,6 +6,9 @@
     padding:0;
     font:12pt Myriad Pro;
 }
+.modal-1100 {
+    width : !important 1000px;
+}
 #searchterm {
     width: 450px;
     margin-left : 120px;

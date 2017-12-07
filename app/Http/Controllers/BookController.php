@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class BookController extends Controller
 {
+    private $books;
     public function index(Request $request){
         $category = Category::all();
         $author = Author::all();
@@ -26,9 +27,9 @@ class BookController extends Controller
 
         if($request->has('keywords')){
             $query = $request->get('keywords');
-            $books = Book::where('title','LIKE','%'.$request.'%');
+            $books = Book::where('title','LIKE','%'.$request.'%')->paginate(env('PER_PAGE'));
         } else {
-            $books = Book::all();
+            $books = Book::first()->paginate(env('PER_PAGE'));
         }
         
         return view('pages.books.index',compact('books','category','author','publisher','gmd','subject','location'));
@@ -36,6 +37,24 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate(request(), [
+            'inventory_number' => 'required',
+            'title' => 'required',
+            'author_id' => 'required',
+            'category_id' => 'required',
+            'publisher_id' => 'required',
+            'publish_place' => 'required',
+            'location_id' => 'required',
+            'year' => 'required',
+            'gmd_id' => 'required',
+            'subject_id' => 'required',
+            'edition' => 'required',
+            'class' => 'required',
+            'language' => 'required',
+            'isbn' => 'required',
+            'synopsis' => 'required',
+        ]);
+
         Book::create([
             'inventory_number' => request('inventory_number'),
             'title' => request('title'),
@@ -65,8 +84,6 @@ class BookController extends Controller
     public function edit(Book $books)
     {
         $result = $books->toArray();
-        print_r($result);
-        exit();
     }
     
     public function delete(Request $request, Book $books)
@@ -83,8 +100,16 @@ class BookController extends Controller
     public function doImport(BookImport $import)
     {
         $results = $import->get();
-        Book::truncate();
         Book::insert($results->toArray());
         return redirect('books')->with('status', 'Import buku berhasil');
+    }
+    public function export()
+    {
+        $datas =  Book::All()->toArray();
+        return Excel::create('Layout Book', function($excel) use ($datas) {
+            $excel->sheet('book', function($sheet) use ($datas) {
+                $sheet->fromArray($datas);
+            });
+        })->export('csv');
     }
 }

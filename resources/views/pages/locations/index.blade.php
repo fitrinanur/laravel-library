@@ -25,9 +25,12 @@
                 </tr>
             </thead>
             <tbody>
+            @php
+            $no = 1 ;
+            @endphp
             @foreach($location as $data)
                 <tr>
-                <th scope="row">1</th>
+                <th scope="row">@php echo $no++ @endphp</th>
                 <td>{{$data->location}}</td>
                 <td>
                     <button class="btn btn-info btn-sm"><a class="edit-action" href="{{ route('location.edit', $data )}}">
@@ -40,6 +43,7 @@
             @endforeach
             </tbody>
         </table>
+        {!! $location->render() !!}
     </div>
 </div>
 <!-- modal add data -->
@@ -53,7 +57,7 @@
         </button>
       </div>
       <div class="modal-body">
-      <form action="{{ route('location.store') }}" class="" id="flocation" method="post" enctype="multipart/form-data">
+      <form action="" class="" id="flocation" method="post" enctype="multipart/form-data">
           {{ csrf_field() }}
 
           <input type="hidden" name="id" value=""/>
@@ -61,7 +65,7 @@
 
           <div class="form-group has-feedback{{ $errors->has('location')? 'has-error':''}}">
             <label for="">Location</label>
-            <input type="text" name="location" placeholder="Add gmd type " class="form-control" value="{{ old('location') }}"/>
+            <input type="text" name="location" placeholder="Add location " class="form-control" value="{{ old('location') }}"/>
             @if ($errors->has('location'))
             <span class="help-block">
               <p>{{ $errors->first('location') }}</p>
@@ -71,7 +75,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" id="bsave" class="btn btn-primary" value="Save" >Save changes</button>
+            <button type="button" id="bsave" class="btn btn-primary" value="Save" >Save changes</button>
          </div>
 
         </form>
@@ -95,9 +99,20 @@ $(document).ready(function(e){
                 data : $('#flocation').serialize(),
                 success : function(result){
                     $('#AddDataModal').modal('hide');
+                    swal({
+                        title: 'Success Added',
+                        text: "Location has been Added !",
+                        type: 'success',
+                    });
+                    window.location.reload();
                 },
                 error : function(result){
                     console.log(result);
+                    swal({
+                        title: 'Ooops...',
+                        text: "Make sure you complete the data ☹️ !",
+                        type: 'error',
+                    });
                 }
             });
         }
@@ -110,10 +125,21 @@ $(document).ready(function(e){
                 data : $('#flocation').serialize(),
                 success : function(result){
                     console.log(result);
-                    // $('#AddDataModal').modal('hide');
+                    $('#AddDataModal').modal('hide');
+                    swal({
+                        title: 'Update Success',
+                        text: "locations data has been updated !",
+                        type: 'success',
+                    });
+                    window.location.reload();
                 },
                 error : function(result) {
                     console.log(result);
+                    swal({
+                        title: 'Ooops...',
+                        text: "Something wrong when update ☹️ !",
+                        type: 'error',
+                    });
                 }
             })
         }
@@ -127,7 +153,7 @@ $(document).ready(function(e){
       success: function(result){
         $('#title').text('edit data');
         $('input[name=id]').val(result.id);
-        $('input[name=location]').val(result.name);
+        $('input[name=location]').val(result.location);
         $('input[name=_method]').val('PATCH');
         $('#AddDataModal').modal('show');
       },
@@ -140,21 +166,50 @@ $(document).ready(function(e){
 
 //delete-model
     $('.delete-action').click(function(e) {
-        var url = $(this).attr('href');
-        $.ajax({
-            type: 'post',
-            url: url,
-            data: {
-            _method:"delete",
-            _token: "{{csrf_token()}}"
-            },
-            success: function(data) {
-                console.log(data);
-            },
-            error: function(data){
-            console.log(data);
+        swal({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false,
+          reverseButtons: true,
+          allowOutsideClick: false
+        }).then((result) => {
+            if(result.value){
+                var url = $(this).attr('href');
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {
+                    _method:"delete",
+                    _token: "{{csrf_token()}}"
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        swal({
+                            title: 'Delete Success',
+                            text: "location data has been deleted !",
+                            type: 'success',
+                        });
+                        window.location.reload();
+                    },
+                    error: function(data){
+                        console.log(data);
+                        swal({
+                                title: 'Cancel Done',
+                                text: "Your data is safe 😁 !",
+                                type: 'info',
+                        });
+                    }
+                });
             }
-        });
+        })
         e.preventDefault();
     });
 });

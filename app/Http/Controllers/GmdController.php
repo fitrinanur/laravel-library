@@ -11,9 +11,9 @@ class GmdController extends Controller
     {
         if($request->has('keywords')){
             $query = $request->get('keywords');
-            $gmds = Gmd::where('gmd_type','LIKE','%' .$query. '%')->get();
+            $gmds = Gmd::where('gmd_type','LIKE','%' .$query. '%')->paginate(env('PER_PAGE'));
         } else {
-            $gmds = Gmd::all();
+            $gmds = Gmd::latest()->paginate(env('PER_PAGE'));;
         }
        
 
@@ -30,7 +30,7 @@ class GmdController extends Controller
             'gmd_type' => request('gmd_type')
         ]);
 
-        return redirect()->route('gmd.index');
+        return ['status' => true, 'message' => 'new data gmd_type saved'];
     }
 
     public function edit(Gmd $gmd)
@@ -46,7 +46,7 @@ class GmdController extends Controller
         ];
 
         $gmd->update($data);
-       
+        return ['status' => true, 'message' => 'data gmd_type UPDATED'];    
     }
 
     public function delete(Gmd $gmd)

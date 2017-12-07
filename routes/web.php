@@ -81,7 +81,7 @@ Route::group([
     Route::post('/locations', 'LocationController@store')->name('location.store');
     Route::get('/locations/{location}/edit', 'LocationController@edit')->name('location.edit');
     Route::patch('/locations/{location}/edit', 'LocationController@update')->name('location.update');
-    Route::delete('/locations/{location}/delete', 'LocationController@destroy')->name('location.destroy');
+    Route::delete('/locations/{location}/delete', 'LocationController@delete')->name('location.destroy');
 });
 
 Route::group([
@@ -95,6 +95,7 @@ Route::group([
   Route::delete('/books/{books}/delete', 'BookController@delete')->name('book.delete');
   Route::get('/books/import', 'BookController@import');
   Route::post('/books/import', 'BookController@doimport');
+  Route::get('/books/export', 'BookController@export');
 
 });
 
@@ -103,7 +104,10 @@ Route::group([
 ],function(){
   Route::get('/loans', 'LoanController@index')->name('loan.index');
   Route::post('/loans', 'LoanController@store')->name('loan.store');
-  Route::get('/loans/report', 'LoanController@report');
+  Route::get('/loans/report',[
+    'uses'  => 'LoanController@report',
+    'as'    => 'pdf',
+  ]);
   Route::get('/loans/{loans}/return', 'LoanController@returnbook')->name('loan.return');
 
   Route::patch('/loans/{loans}/return', 'LoanController@returnupdate')->name('loan.returnupdate');
@@ -111,4 +115,8 @@ Route::group([
   Route::get('/loans/{loans}/edit', 'LoanController@edit')->name('loan.edit');
   Route::patch('/loans/{loans}/edit', 'LoanController@update')->name('loan.update');
   Route::delete('/loans/{loans}/delete', 'LoanController@delete')->name('loan.delete');
+    
 });
+
+Route::get('/profile','ProfileController@show'
+)->name('profile');

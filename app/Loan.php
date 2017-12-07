@@ -10,13 +10,7 @@ class Loan extends Model
         'user_id','book_first_id','book_second_id','borrow','duedate','return','fine'
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'borrow',
-        'duedate',
-        'return'
-    ];
+    
 
     public function user()
     {

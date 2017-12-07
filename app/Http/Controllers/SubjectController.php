@@ -11,9 +11,9 @@ class SubjectController extends Controller
     {
         if($request->has('keywords')){
             $query = $request->get('keywords');
-            $subject = Subject::where('name','LIKE','%'.$query.'%')->get();
+            $subject = Subject::where('name','LIKE','%'.$query.'%')->paginate(env('PER_PAGE'));
         }else{
-            $subject = Subject::all();
+            $subject = Subject::latest()->paginate(env('PER_PAGE'));
         }
        
         return view('pages.subjects.index',compact('subject'));
@@ -45,7 +45,7 @@ class SubjectController extends Controller
         ];
 
         $subject->update($data);
-        return redirect()->route('subject.index');
+        return ['status' => true, 'message' => 'new data subject updated'];
     }
 
     public function delete(Subject $subject)

@@ -15,7 +15,7 @@ class PublisherController extends Controller
             $publishers = Publisher::where('name','LIKE','%'.$query.'%')
             ->paginate((env('PER_PAGE')));
         } else {
-            $publishers = Publisher::latest()->paginate((env('PER_PAGE')));
+        $publishers = Publisher::latest()->paginate((env('PER_PAGE')));
         }
         return view('pages.publishers.index',compact('publishers'));
     }

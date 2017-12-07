@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Location;
+use Alert;
+
 
 class LocationController extends Controller
 {
@@ -11,9 +13,9 @@ class LocationController extends Controller
     {   
         if($request->has('keywords')){
             $query = $request->get('keywords');
-            $location = Location::where('location','LIKE','%' .$query. '%')->get();
+            $location = Location::where('location','LIKE','%' .$query. '%')->paginate(env('PER_PAGE'));
         } else {
-            $location = Location::all();
+            $location = Location::first()->paginate(env('PER_PAGE'));
             
         }
        

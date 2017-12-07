@@ -9,7 +9,7 @@
     <div class="card-block">
         <div class="attribute">
             <button type="button" class="btn btn-primary" 
-             data-toggle="modal" data-target="#AddDataModal">Add Subject</button>
+             data-toggle="modal" data-target="#AddDataModal" >Add Subject</button>
             <form class="form-inline search-form" action={{ route('subject.index')}} method='get'>
                 <input class="form-control mr-sm-2" name="keywords" type="search" placeholder="Search" 
                 value="{{ request()->get('keywords')}}" aria-label="Search">
@@ -26,9 +26,12 @@
                 </tr>
             </thead>
             <tbody>
+            @php
+            $no = 1 ;
+            @endphp
             @foreach($subject as $data)
                 <tr>
-                <th scope="row">1</th>
+                <th scope="row">@php echo $no++ @endphp</th>
                 <td>{{$data->name}}</td>
                 <td>
                     <button class="btn btn-info btn-sm"><a class="edit-action" href="{{ route('subject.edit', $data )}}">
@@ -41,6 +44,7 @@
             @endforeach
             </tbody>
         </table>
+        {!! $subject->render() !!}
     </div>
 </div>
 <!-- modal add data -->
@@ -54,10 +58,12 @@
         </button>
       </div>
       <div class="modal-body">
-      <form action="{{ route('subject.store') }}" class="fsubject" method="post" enctype="multipart/form-data">
+      <form action="" class="fsubject" method="post" enctype="multipart/form-data">
           {{ csrf_field() }}
+          <input type="hidden" name="id" value=""/>
+          <input type="hidden" name="_method" value="POST">
 
-          <div class="form-group has-feedback{{ $errors->has('name')? 'has-error':''}}">
+          <div class="form-group"></div>
             <label for="" id="title">Name Subject</label>
             <input type="text" name="name" placeholder="Add name type " class="form-control" value="{{ old('name') }}"/>
             @if ($errors->has('name'))
@@ -69,7 +75,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" id="bsave" class="btn btn-primary" value="Save" >Save changes</button>
+            <button type="button" id="bsave" class="btn btn-primary">Save changes</button>
          </div>
 
         </form>
@@ -82,8 +88,8 @@
 @endsection
 @section('js')
 <script type="text/javascript">
-$(document).ready(function(){
-    $('#bsave').click(function(){
+$(document).ready(function(e){
+    $('#bsave').click(function(e){
         var formType = $('input[name=_method]').val();
         if( formType === 'POST'){
             $.ajax({
@@ -91,10 +97,21 @@ $(document).ready(function(){
                 method : "POST",
                 data : $('#fsubject').serialize(),
                 success : function (data) {
-                    console.log(data);
+                    $('#AddDataModal').modal('hide');
+                    swal({
+                        title: 'Success Added',
+                        text: "Subjects has been Added !",
+                        type: 'success',
+                    });
+                    window.location.reload();
                 },
                 error : function(data) {
-                    console.log(data)
+                    console.log(data);
+                    swal({
+                        title: 'Ooops...',
+                        text: "Make sure you complete the data ☹️ !",
+                        type: 'error',
+                    });
                 }
             });
         }
@@ -106,14 +123,26 @@ $(document).ready(function(){
                 method: "POST",
                 data : $('#fsubject').serialize(),
                 success : function(result){
+                    $('#AddDataModal').modal('hide');
                     console.log(result);
+                    swal({
+                        title: 'Update Success',
+                        text: "subject data has been updated !",
+                        type: 'success',
+                    });
                 },
                 error : function(result){
                     console.log(result);
+                    swal({
+                        title: 'Ooops...',
+                        text: "Something wrong when update ☹️ !",
+                        type: 'error',
+                    });
                 }
             });
-        }
+        }  e.preventDefault();
     });
+
     $('.edit-action').click(function(e){
         var url = $(this).attr('href');
         $.ajax({
@@ -126,7 +155,6 @@ $(document).ready(function(){
                 $('input[name=_method]').val('PATCH');
                 $('#AddDataModal').modal('show');
             },
-
             error : function(result){
                 console.log(result);
             }
@@ -135,21 +163,49 @@ $(document).ready(function(){
     });
 
     $('.delete-action').click(function(e){
-        var url = $(this).attr('href');
-        $.ajax({
-            url : url,
-            method :"post",
-            data : {
-                _method :"delete",
-                _token : "{{csrf_token()}}"
-            },
-            success : function(data){
-                console.log(data);
-            },
-            error : function(data){
-                console.log(data);
+        swal({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false,
+          reverseButtons: true
+        }).then((result)=> {
+            if(result.value){
+                var url = $(this).attr('href');
+                $.ajax({
+                    url : url,
+                    method :"post",
+                    data : {
+                        _method :"delete",
+                        _token : "{{csrf_token()}}"
+                    },
+                    success : function(data){
+                        console.log(data);
+                        swal({
+                            title: 'Delete Success',
+                            text: "Subject data has been deleted !",
+                            type: 'success',
+                        });
+                        window.location.reload();
+                    },
+                    error : function(data){
+                        console.log(data);
+                        swal({
+                            title: 'Cancel Done',
+                            text: "Your data is safe 😁 !",
+                            type: 'info',
+                        });
+                    }
+                }); 
             }
-        });
+        })
         e.preventDefault();
     });
 });

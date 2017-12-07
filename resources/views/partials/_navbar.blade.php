@@ -20,6 +20,9 @@
                     document.getElementById('logout-form').submit();">
                     <i class="fa fa-lock"></i> Logout
                 </a>
+                <a class="dropdown-item" href="{{ route('profile') }}">
+                    <i class="fa fa-lock"></i> Profile
+                </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     {{ csrf_field() }}
                 </form>

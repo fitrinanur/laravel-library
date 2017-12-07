@@ -90,8 +90,17 @@ class LoanController extends Controller
         return response ()->json(['status' => true, 'message' => 'delete success']);
     }
 
-    public function report() {
-        $pdf = PDF::loadHTML('<h1>Test</h1>');
-        return $pdf->stream();
+    public function report(Loan $loans) {
+        
+        $loans = Loan::all();
+       
+        view()->share('loans.pdf',$loans);
+        print_r($loans);
+        exit();
+        
+        $pdf = PDF::loadView('pages.loans.pdf',compact('loans'));
+
+        return $pdf->download('Loans Trasaction');
+        return view('pdf');
     }
 }

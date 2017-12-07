@@ -14,7 +14,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-    protected $guarded = [];
+    protected $table = 'books';
+    protected $fillable = [
+        'inventory_number','title','author_id','category_id','publisher_id',
+        'publish_place','location_id','year','gmd_id','subject_id','edition',
+        'class','language','isbn','synopsis','image','status'
+    ];
     
     public function Category()
     {
